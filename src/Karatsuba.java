@@ -11,28 +11,39 @@ public class Karatsuba {
 
         int[] ans = multiply(num1, num2);
 
-        for (int var : ans) {
-            System.out.print(var);
+        for (int digit : ans) {
+            // if (digit >= 10) {
+            // System.err.println("Something went wrong");
+            // System.err.println(digit);
+            // }
+            System.out.print(digit);
         }
         System.out.println();
     }
 
     public static int[] multiply(int[] x, int[] y) {
-        int[] ans = new int[x.length + y.length];
+        int[] ans;
+
+        x = removeLeadingZeros(x);
+        y = removeLeadingZeros(y);
+
+        int product = x[0] * y[0];
+
+        if (product >= 10) {
+            ans = new int[x.length + y.length];
+        } else {
+            ans = new int[x.length + y.length - 1];
+        }
 
         if (x.length == 1 || y.length == 1) {
-            int product = x[0] * y[0];
             if (product >= 10) {
                 ans[0] = product / 10;
                 ans[1] = product % 10;
             } else {
-                ans[1] = product;
+                ans[0] = product;
             }
             return removeLeadingZeros(ans);
         }
-
-        x = removeLeadingZeros(x);
-        y = removeLeadingZeros(y);
 
         int n = Math.max(x.length, y.length);
 
@@ -65,12 +76,20 @@ public class Karatsuba {
             fin[i] = temp[i];
         }
 
-        ans =
+        ans = add(newAC, add(fin, bd));
 
-                add(newAC, add(fin, bd));
         ans = removeLeadingZeros(ans);
 
         return ans;
+    }
+
+    public static boolean contains(int[] arr, int n) {
+        for (int var : arr) {
+            if (var == n) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static int[] toArray(String n) {
@@ -85,9 +104,6 @@ public class Karatsuba {
     }
 
     public static int[] add(int[] x, int[] y) {
-        x = removeLeadingZeros(x);
-        y = removeLeadingZeros(y);
-
         int n = Math.max(x.length, y.length);
 
         x = setSize(x, n);
@@ -111,9 +127,6 @@ public class Karatsuba {
     }
 
     public static int[] subtract(int[] x, int[] y) {
-        x = removeLeadingZeros(x);
-        y = removeLeadingZeros(y);
-
         int n = Math.max(x.length, y.length);
 
         x = setSize(x, n);
@@ -158,7 +171,7 @@ public class Karatsuba {
         }
 
         if (count == arr.length) {
-            count--;
+            return new int[1];
         }
 
         int[] removed = new int[arr.length - count];
