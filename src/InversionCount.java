@@ -11,10 +11,10 @@ public class InversionCount {
 
     public static void main(String[] args) throws IOException {
         File intFile = new File("assets/IntegerArray.txt");
-        int[] unsorted, sorted;
+        int[] unsorted;
 
         unsorted = fileToIntArray(intFile);
-        sorted = mergeSort(unsorted);
+        mergeSort(unsorted);
 
         System.out.println(inversionCount);
     }
