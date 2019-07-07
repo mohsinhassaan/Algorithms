@@ -10,9 +10,50 @@ import java.util.HashMap;
  */
 public class Dijkstra {
     public static void main(String[] args) throws IOException {
-        File inputFile = new File("assets/dijkstraData");
+        File inputFile = new File("assets/dijkstraData.txt");
         var G = initializeGraph(inputFile);
 
+        var A = dijkstraShortestPaths(G, 1);
+
+        for (int v : G.keySet()) {
+            A.putIfAbsent(v, 1000000);
+        }
+
+        int[] needed = { 7, 37, 59, 82, 99, 115, 133, 165, 188, 197 };
+
+        for (int vertex : needed) {
+            System.out.print(A.get(vertex) + ",");
+        }
+
+    }
+
+    private static HashMap<Integer, Integer> dijkstraShortestPaths(
+            HashMap<Integer, ArrayList<Pair<Integer, Integer>>> G, int S) {
+        var X = new ArrayList<Integer>();
+        X.add(S);
+
+        var A = new HashMap<Integer, Integer>();
+        A.put(S, 0);
+
+        while (X.size() != G.size()) {
+            var minW = new Pair<Integer, Integer>(0, Integer.MAX_VALUE);
+            int minV = 0, minGreedyCriterion = Integer.MAX_VALUE, greedyCriterion;
+
+            for (var v : X) {
+                for (var w : G.get(v)) {
+                    if (!X.contains(w.x) && (greedyCriterion = w.y + A.get(v)) < minGreedyCriterion) {
+                        minW = w;
+                        minV = v;
+                        minGreedyCriterion = greedyCriterion;
+                    }
+                }
+            }
+
+            X.add(minW.x);
+            A.put(minW.x, A.get(minV) + minW.y);
+        }
+
+        return A;
     }
 
     private static HashMap<Integer, ArrayList<Pair<Integer, Integer>>> initializeGraph(File inputFile)
@@ -30,23 +71,25 @@ public class Dijkstra {
             lastNum = 0;
 
             // For source vertex
-            while ((currChar = line.charAt(i++)) != ' ' || currChar != '\t') {
+            while ((currChar = line.charAt(i++)) != '\t') {
                 currNum *= 10;
                 currNum += currChar - '0';
             }
 
             currPoint = currNum;
             G.putIfAbsent(currPoint, new ArrayList<Pair<Integer, Integer>>());
+            currNum = 0;
 
             // Until end of line
             while (i < line.length()) {
                 currChar = line.charAt(i++);
 
-                if (currChar == ' ' || currChar == '\t') {
+                if (currChar == '\t') {
                     G.get(currPoint).add(new Pair<Integer, Integer>(lastNum, currNum));
                     currNum = 0;
                 } else if (currChar == ',') {
                     lastNum = currNum;
+                    currNum = 0;
                 } else {
                     currNum *= 10;
                     currNum += currChar - '0';
